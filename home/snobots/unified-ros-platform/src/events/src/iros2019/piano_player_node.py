@@ -94,7 +94,7 @@ def knokin_on(beat_to_sec, repeat):
         print('Dm', measure_key('Dm', 4*beat_to_sec))
 
 
-def cantonese_song(beat_to_sec, out_part):
+def cantonese_song(beat_to_sec, out_part, end=False):
     for i in range(2):
         measure_key('C', 2*beat_to_sec)
         measure_key('G', 2*beat_to_sec)
@@ -102,9 +102,13 @@ def cantonese_song(beat_to_sec, out_part):
         measure_key('Em', 2*beat_to_sec)
         measure_key('F', 2*beat_to_sec)
         measure_key('G', 2*beat_to_sec)
-        measure_key('C', 2*beat_to_sec)
-        measure_key('G', 2*beat_to_sec)
-
+        
+        if i == 0 or (i == 1 and not end):
+            measure_key('C', 2*beat_to_sec)
+            measure_key('G', 2*beat_to_sec)
+        elif end and i == 1:
+            measure_key('C', 4*beat_to_sec)
+    
     if out_part == 1:
         for i in range(2):
             measure_key('Am', 2*beat_to_sec)
@@ -208,8 +212,10 @@ def play_keys(mode=None, control=None, ratep=None):
         elif song == 'beyond':
             for i in range(6):
                 print('ITERATION {} ---------------------'.format(i))
-                if i == 0 or i == 4 or i == 5:
+                if i == 0 or i == 4:
                     cantonese_song(beat_to_sec, 0)
+                elif i == 5:
+                    cantonese_song(beat_to_sec, 0, True)
                 elif i == 1 or i == 3:
                     cantonese_song(beat_to_sec, 1)
                 elif i == 2:
@@ -234,15 +240,12 @@ def billie_jean_ik(config, beat_to_sec):
 def measure_ik(arm, key, expected):
     t1 = time()
     inv_kin.move_arm(arm, key['ready'])
-    sleep(0.04)
+    sleep(1)
     inv_kin.move_arm(arm, key['play'])
-    sleep(0.04)
-
-    while(time()-t1 < expected-0.04):
-        sleep(0.001)
+    sleep(1)
     inv_kin.move_arm(arm, key['ready'])
-    sleep(0.04)
-
+    sleep(1)
+    
     return time() - t1
 
 
@@ -252,7 +255,7 @@ def align_hand():
 
     new_angle = 0
 
-    while keys.hand.y != -1 and keys.blue.y > hand_center:        
+    while keys.hand.y != -1 and keys.blue.y + keys.blue.height/2 > hand_center:        
         print('Blue Y = {0}\tHand Y = {1}'.format(keys.blue.y, hand_center))
         new_angle = inv_kin.move_r_shoulder()
         sleep(1) # important!
@@ -280,8 +283,7 @@ def calculate_ik_values():
     # get shoulder (servo #2) from visual servoing        
     r_shoulder_angle = align_hand()
     l_shoulder_angle = -r_shoulder_angle
-    print(l_shoulder_angle)
-    raw_input('Press Enter to ready')
+    print('r shoulder, l_shoulder', r_shoulder_angle, l_shoulder_angle)
     inv_kin.move_joint_to('r_sho_pitch', original_right[0])
     
     # because our arm length is fixed (and we can't move more in the z-axis),
@@ -293,7 +295,6 @@ def calculate_ik_values():
     d_roll = original_right[1]
     d_roll += inv_kin.calc_sho_roll(desired, new_z)
     print('calculated D', d_roll)
-    raw_input('Press Enter to calculate A')
 
     desired = inv_kin.key_width * 3
     new_z = ((length_arm*length_arm) - (desired*desired))**0.5
@@ -302,7 +303,6 @@ def calculate_ik_values():
     a_roll = original_left[1]
     a_roll += inv_kin.calc_sho_roll(desired, new_z)
     print('calculated A', a_roll)
-    raw_input('Press Enter to calculate G')
 
     desired = inv_kin.key_width * 2
     new_z = ((length_arm*length_arm) - (desired*desired))**0.5
@@ -311,42 +311,13 @@ def calculate_ik_values():
     g_roll = original_left[1]
     g_roll += inv_kin.calc_sho_roll(desired, new_z)
     print('calculated G', g_roll)
-    raw_input('Press Enter to test D ready')
-            
-    # check values1
-    print('Ready for D')
-    inv_kin.move_joint_to('r_sho_pitch', original_right[0])
-    sleep(1)
-    inv_kin.move_joint_to('r_sho_roll', d_roll)
-    sleep(1)
-    raw_input('Press Enter to test D play ')
-    inv_kin.move_joint_to('r_sho_pitch', r_shoulder_angle)
-    sleep(1)
-
-    print('Ready for A')
-    inv_kin.move_joint_to('l_sho_pitch', original_left[0])
-    sleep(1)
-    inv_kin.move_joint_to('l_sho_roll', a_roll)
-    sleep(1)
-    raw_input('Press Enter to test A play ')
-    inv_kin.move_joint_to('l_sho_pitch', l_shoulder_angle)
-    sleep(1)
-
-    print('Ready for G')
-    inv_kin.move_joint_to('l_sho_pitch', original_left[0])
-    sleep(1)
-    inv_kin.move_joint_to('l_sho_roll', g_roll)
-    sleep(1)
-    raw_input('Press Enter to test G play ')
-    inv_kin.move_joint_to('l_sho_pitch', l_shoulder_angle)
-    sleep(1)
 
     # organize for return
 
     vars['Do']['ready'] = original_right
     vars['Do']['play'] = [r_shoulder_angle, original_right[1], 0]
 
-    vars['Re']['ready'] = [original_left[0], d_roll, 0]
+    vars['Re']['ready'] = [original_right[0], d_roll, 0]
     vars['Re']['play'] = [r_shoulder_angle, d_roll, 0]
 
     vars['La']['ready'] = [original_left[0], a_roll, 0]
@@ -355,12 +326,42 @@ def calculate_ik_values():
     vars['Sol']['ready'] = [original_left[0], g_roll, 0]
     vars['Sol']['play'] = [l_shoulder_angle, g_roll, 0]
 
+    # check values1
+
+    raw_input('Press enter to prepare for test! (be ready to kill servos if something went wrong!!!)')
+
+    inv_kin.move_arm('r', vars['Re']['ready'])
+    sleep(1)
+    inv_kin.move_arm('r', vars['Re']['play'])
+    sleep(1)
+
+    inv_kin.move_arm('r', vars['Do']['ready'])
+    sleep(1)
+    inv_kin.move_arm('r', vars['Do']['play'])
+    sleep(1)
+
+    inv_kin.move_arm('r', original_right)
+    sleep(1)
+    inv_kin.move_arm('l', vars['La']['ready'])
+    sleep(1)
+    inv_kin.move_arm('l', vars['La']['play'])
+    sleep(1)
+
+    inv_kin.move_arm('l', vars['Sol']['ready'])
+    sleep(1)
+    inv_kin.move_arm('l', vars['Sol']['play'])
+    sleep(1)
 
     with open(ik_config, 'w') as fp:
         c = json.dumps(
             vars, sort_keys=True, indent=2)
         c = c.replace('"##<', '').replace('>##"', '')
         fp.write(c)
+
+    inv_kin.move_arm('r', original_right)
+    sleep(1)
+    inv_kin.move_arm('l', original_left)
+    sleep(1)
 
 
 # MAIN -------------------------------------------------------------
@@ -414,11 +415,13 @@ if __name__ == '__main__':
 
     if with_ik:
         cal = raw_input('Calibrate? (y/n)')
-        if cal == 'y':
+        while cal == 'y':
             calculate_ik_values()
-            sleep(10)
+            sleep(1)
             control_module.action().play_action("key_ready")
             sleep(1)
+            cal = raw_input('Calibrate again? (y/n)')
+        
         rospy.loginfo('Press start button to begin.')
 
     while not rospy.is_shutdown():        

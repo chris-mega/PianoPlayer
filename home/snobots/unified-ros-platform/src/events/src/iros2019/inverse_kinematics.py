@@ -72,6 +72,8 @@ class InverseKinematics(object):
 
         self.joint_positions = dict(zip(InverseKinematics.joints, vals))
 
+        self.active_control = False
+
 
     def get_joint_states(self, msg):
         self.header = msg.header
@@ -83,11 +85,14 @@ class InverseKinematics(object):
     
 
     def set_module(self, name):
-        set_module_srv = SetModule()
-        set_module_srv.module_name = name
+        if not self.active_control:
+            set_module_srv = SetModule()
+            set_module_srv.module_name = name
 
-        if not self.set_joint_module_client.call(set_module_srv.module_name):
-            rospy.logerr('Failed to set module')
+            if not self.set_joint_module_client.call(set_module_srv.module_name):
+                rospy.logerr('Failed to set module')
+            
+            self.active_control = True
 
 
     def publish_joints(self):
