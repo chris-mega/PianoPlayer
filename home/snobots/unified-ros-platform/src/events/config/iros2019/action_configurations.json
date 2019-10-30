@@ -1,0 +1,190 @@
+{
+    "drums_ready":{
+        "index": 184,
+        "play_count": 1
+    },
+    "loop_1":{
+        "index": 180,
+        "play_count": 1
+    },
+    "HH-Kick":{
+        "index": 185,
+        "play_count": 1
+    },
+    "HH":{
+        "index": 186,
+        "play_count": 1
+    },
+    "HH-Snare":{
+        "index": 187,
+        "play_count": 1
+    },
+    "Snare":{
+        "index": 188,
+        "play_count": 1
+    },
+    "Crash":{
+        "index": 189,
+        "play_count": 1
+    },
+    "Ride":{
+        "index": 190,
+        "play_count": 1
+    },
+    "Ride-Kick":{
+        "index": 191,
+        "play_count": 1
+    },
+    "Snare-Ride":{
+        "index": 192,
+        "play_count": 1
+    },
+    "ready_left":{
+        "index": 193,
+        "play_count": 1
+    },
+    "Crash-Kick":{
+        "index": 194,
+        "play_count": 1
+    },
+    "op3_sitdown":{
+        "index": 3,
+        "play_count": 1
+    },
+    "key_ready":{
+        "index": 184,
+        "play_count": 1
+    },
+    "Do left":{
+        "index": 185,
+        "play_count": 1
+    },
+    "Re left":{
+        "index": 186,
+        "play_count": 1
+    },
+    "Mi left":{
+        "index": 187,
+        "play_count": 1
+    },
+    "Fa left":{
+        "index": 188,
+        "play_count": 1
+    },
+    "Sol left":{
+        "index": 189,
+        "play_count": 1
+    },
+    "La left":{
+        "index": 190,
+        "play_count": 1
+    },
+    "Si left":{
+        "index": 191,
+        "play_count": 1
+    },
+    "Do right":{
+        "index": 192,
+        "play_count": 1
+    },
+    "Re right":{
+        "index": 193,
+        "play_count": 1
+    },
+    "Mi right":{
+        "index": 194,
+        "play_count": 1
+    },
+    "Fa right":{
+        "index": 195,
+        "play_count": 1
+    },
+    "Sol right":{
+        "index": 196,
+        "play_count": 1
+    },
+    "La right":{
+        "index": 197,
+        "play_count": 1
+    },
+    "Si right":{
+        "index": 198,
+        "play_count": 1
+    },
+    "Do right high":{
+        "index": 199,
+        "play_count": 1
+    },
+    "Em":{
+        "index": 200,
+        "play_count": 1
+    },
+    "Em ready":{
+        "index": 201,
+        "play_count": 1
+    },
+    "G":{
+        "index": 202,
+        "play_count": 1
+    },
+    "G ready":{
+        "index": 203,
+        "play_count": 1
+    },
+    "C":{
+        "index": 204,
+        "play_count": 1
+    },
+    "C ready":{
+        "index": 205,
+        "play_count": 1
+    },
+    "F":{
+        "index": 206,
+        "play_count": 1
+    },
+    "F ready":{
+        "index": 207,
+        "play_count": 1
+    },
+    "Am":{
+        "index": 208,
+        "play_count": 1
+    },
+    "Am ready":{
+        "index": 209,
+        "play_count": 1
+    },
+    "Dm":{
+        "index": 210,
+        "play_count": 1
+    },
+    "Dm ready":{
+        "index": 211,
+        "play_count": 1
+    },
+    "Dm billie":{
+        "index": 214,
+        "play_count": 1
+    },
+    "Dm billie ready":{
+        "index": 215,
+        "play_count": 1
+    },
+    "Em billie":{
+        "index": 216,
+        "play_count": 1
+    },
+    "Em billie ready":{
+        "index": 217,
+        "play_count": 1
+    },
+    "F billie":{
+        "index": 218,
+        "play_count": 1
+    },
+    "F billie ready":{
+        "index": 219,
+        "play_count": 1
+    }
+}

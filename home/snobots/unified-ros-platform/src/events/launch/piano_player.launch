@@ -1,0 +1,28 @@
+<launch>
+    <arg name="event" default="iros2019"/>
+    <arg name="size" default="kid"/>
+    <arg name="song"/>
+    <arg name="udp" default="0"/>
+    <arg name="ik" default="0"/>
+
+    <param name="/robotis/direct_control/default_moving_time"     value="0.04"/>
+    <param name="/robotis/direct_control/default_moving_angle"    value="90"/>
+
+    <!-- robotis op3 manager -->
+    <include file="$(find op3_manager)/launch/op3_manager.launch">
+        <arg name="size" value="$(arg size)"/>
+    </include>
+
+    <!-- vision -->
+    <include file="$(find iros_vision)/launch/piano_detector.launch">
+        <arg name="size" value="$(arg size)"/>
+    </include>
+
+    <node name="piano_player_node" pkg="events" type="piano_player_node.py" output="screen">
+        <param name="event" type="str" value="$(arg event)" />
+        <param name="size" type="string" value="$(arg size)" />
+        <param name="song" type="string" value="$(arg song)" />
+        <param name="udp" type="string" value="$(arg udp)"/>
+        <param name="ik" type="string" value="$(arg ik)"/>
+    </node>
+</launch>
