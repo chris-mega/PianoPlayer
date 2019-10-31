@@ -110,18 +110,53 @@ class InverseKinematics(object):
         self.write_joint_pub2.publish(msg)
 
 
+    def publish_arms_only(self, arm):
+        self.set_module('direct_control_module')
+        msg = JointState()
+        msg.header = self.header
+
+        joint = '{}_sho_pitch'.format(arm)
+        msg.name.append(joint)
+        msg.position.append(self.joint_positions[joint])
+
+        joint = '{}_sho_roll'.format(arm)
+        msg.name.append(joint)
+        msg.position.append(self.joint_positions[joint])
+
+        joint = '{}_el'.format(arm)
+        msg.name.append(joint)
+        msg.position.append(self.joint_positions[joint])
+
+        self.write_joint_pub2.publish(msg)
+
+
     def move_r_shoulder(self): 
         self.joint_positions['r_sho_pitch'] -= 0.017 # move arm down by 1 degree
-        self.publish_joints()
-
+        self.publish_arms_only('r')
+        # self.publish_joints()
         return self.joint_positions['r_sho_pitch']
+
+    
+    def move_r_shoulder_roll_right(self): 
+        self.joint_positions['r_sho_roll'] += 0.017 # move arm down by 1 degree
+        self.publish_arms_only('r')
+        # self.publish_joints()
+        return self.joint_positions['r_sho_roll']
+
+    
+    def move_r_shoulder_roll_left(self): 
+        self.joint_positions['r_sho_roll'] -= 0.017 # move arm down by 1 degree
+        self.publish_arms_only('r')
+        # self.publish_joints()
+        return self.joint_positions['r_sho_roll']
 
 
     def move_arm(self, arm, values):
         self.joint_positions['{}_sho_pitch'.format(arm)] = values[0]
         self.joint_positions['{}_sho_roll'.format(arm)] = values[1]
         self.joint_positions['{}_el'.format(arm)] = values[2]
-        self.publish_joints()
+        # self.publish_joints()
+        self.publish_arms_only(arm)
 
 
     def move_joint_to(self, joint, angle):
@@ -130,8 +165,8 @@ class InverseKinematics(object):
 
 
     def get_arm_values(self):
-        left = (self.joint_positions['l_sho_pitch'], self.joint_positions['l_sho_roll'], self.joint_positions['l_el'])
-        right = (self.joint_positions['r_sho_pitch'], self.joint_positions['r_sho_roll'], self.joint_positions['r_el'])
+        left = [self.joint_positions['l_sho_pitch'], self.joint_positions['l_sho_roll'], self.joint_positions['l_el']]
+        right = [self.joint_positions['r_sho_pitch'], self.joint_positions['r_sho_roll'], self.joint_positions['r_el']]
 
         return left, right
 

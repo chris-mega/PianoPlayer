@@ -240,11 +240,11 @@ def billie_jean_ik(config, beat_to_sec):
 def measure_ik(arm, key, expected):
     t1 = time()
     inv_kin.move_arm(arm, key['ready'])
-    sleep(1)
+    sleep(0.15)
     inv_kin.move_arm(arm, key['play'])
-    sleep(1)
+    sleep(0.15)
     inv_kin.move_arm(arm, key['ready'])
-    sleep(1)
+    sleep(0.15)
     
     return time() - t1
 
@@ -253,17 +253,45 @@ def align_hand():
     # visual servoing
     hand_center = keys.hand.y + keys.hand.height/2
 
-    new_angle = 0
+    goal = keys.blue.y + keys.blue.height/4
 
-    while keys.hand.y != -1 and keys.blue.y + keys.blue.height/2 > hand_center:        
+    ideal_x = 38
+    error = 3
+
+    move_x = 0
+    move_y = 0
+
+    # move left or right
+    if keys.hand.x - keys.blue.x < ideal_x - error:
+        while keys.hand.x - keys.blue.x < ideal_x - error:
+            print('Blue X = {0}\tHand X = {1}'.format(keys.blue.x, keys.hand.x))
+            inv_kin.move_r_shoulder_roll_right()
+            move_x += 0.017
+            sleep(1) # important!
+            print('New angle:', move_x)
+            hand_center = keys.hand.y + keys.hand.height/2
+    elif keys.hand.x - keys.blue.x > ideal_x + error:
+        while keys.hand.x - keys.blue.x > ideal_x + error:
+            print('Blue X = {0}\tHand X = {1}'.format(keys.blue.x, keys.hand.x))
+            inv_kin.move_r_shoulder_roll_left()
+            move_x -= 0.017
+            sleep(1) # important!
+            print('New angle:', move_x)
+            hand_center = keys.hand.y + keys.hand.height/2
+
+    raw_input('Press enter to continue')
+
+    # move down
+    while keys.hand.y != -1 and goal > hand_center:        
         print('Blue Y = {0}\tHand Y = {1}'.format(keys.blue.y, hand_center))
-        new_angle = inv_kin.move_r_shoulder()
+        move_y = inv_kin.move_r_shoulder()
         sleep(1) # important!
-        print('New angle:', new_angle)
+        print('New angle:', move_y)
         hand_center = keys.hand.y + keys.hand.height/2
     
     print('Hand aligned!')
-    return new_angle
+
+    return move_x, move_y
 
 
 def calculate_ik_values():
@@ -281,7 +309,11 @@ def calculate_ik_values():
 
 
     # get shoulder (servo #2) from visual servoing        
-    r_shoulder_angle = align_hand()
+    move_x, r_shoulder_angle = align_hand()
+
+    original_right[1] += move_x
+    original_left[1] += move_x
+
     l_shoulder_angle = -r_shoulder_angle
     print('r shoulder, l_shoulder', r_shoulder_angle, l_shoulder_angle)
     inv_kin.move_joint_to('r_sho_pitch', original_right[0])
@@ -358,10 +390,11 @@ def calculate_ik_values():
         c = c.replace('"##<', '').replace('>##"', '')
         fp.write(c)
 
-    inv_kin.move_arm('r', original_right)
-    sleep(1)
     inv_kin.move_arm('l', original_left)
     sleep(1)
+    inv_kin.move_arm('r', original_right)
+    sleep(1)
+    
 
 
 # MAIN -------------------------------------------------------------

@@ -1,16 +1,16 @@
 object:
 - colour: [255, 0, 0]
-  lower_bound: [77, 122, 124]
+  lower_bound: [77, 180, 130]
   max_size: 50000
   min_size: 200
   name: blue
-  upper_bound: [117, 212, 243]
+  upper_bound: [117, 255, 192]
 - colour: [0, 0, 255]
-  lower_bound: [0, 224, 185]
+  lower_bound: [0, 200, 96]
   max_size: 50000
-  min_size: 200
+  min_size: 100
   name: hand
-  upper_bound: [23, 255, 225]
+  upper_bound: [30, 255, 183]
 - colour: [0, 255, 0]
   lower_bound: [145, 133, 188]
   max_size: 50000
