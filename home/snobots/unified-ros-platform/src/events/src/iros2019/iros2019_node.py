@@ -17,6 +17,8 @@ import os
 import json
 import cv2 as cv
 from udp_connect import server
+from inverse_kinematics import InverseKinematics
+import math
 
 
 class RobotMode(Enum):
@@ -51,111 +53,209 @@ def wait_for_node(node_name):
 
     rospy.loginfo('Node is running: {0}'.format(node_name))
 
-# -------------------------------
-#function to play the whole song
-def knocking_on():
+#===============================================
+# KNOCKING ON HEAVENS DOOR
+#=================================================
+
+
+def knocking_on(time_pased):
     bpm = 72
     beats_to_sec = 60./bpm
-
+    time_mario = time() - time_pased
+    sleep(0.2) #THIS SLEEP IS IMPORTANT FOR OP-3 AND POLARIS TO PLAY IN SYNC!!!
+    print("TIME PASSED SINCE MESSAGE RECEIVED ", str(time_mario))
+    
+    print("INTROOOOOOOOOOOOOO")
     intro_half_verse(beats_to_sec/2)
+    
     print("FIIIIIIIIIIIIIIIIIIIRST VERSEEEEEEEEEEE")
     verse(beats_to_sec/2) #first verse
+    
     print("CHOOOOOOOOOOOOOOOOOOOOOOOOOORUS")
     chorus(beats_to_sec/2)
+    
     print("VEEEEEEEEEEEEEEEEEEEEEEEEEERSE")
     verse(beats_to_sec/2)
+    
     print("CHOOOOOOOOOOOOOOOOOOOOOOOOOORUS")
     chorus(beats_to_sec/2)
+    
     print("**********************************")
-    control_module.action().play_action("Ride")
-    sleep(0.2)
-    control_module.action().play_action("Ride")
-    sleep(0.2)
+    control_module.action().play_action("Crash") 
     exit()
 #------------------------------------------------
 
 
 def chorus(beats_to_sec):
-    for i in range(16):
-
-        t1 = time()
-        control_module.action().play_action("Ride-Kick")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 ) 
-
-        t1 = time()
-        control_module.action().play_action("Ride")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 ) 
-
-        t1 = time()
-        control_module.action().play_action("Snare-Ride")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 ) 
-
-        t1 = time()
-        control_module.action().play_action("Ride")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 ) 
+    for i in range(16): 
+        play_timed_motion(beats_to_sec, "Ride-Kick")
+        play_timed_motion(beats_to_sec, "Ride")
+        play_timed_motion(beats_to_sec, "Snare-Ride")
+        play_timed_motion(beats_to_sec, "Ride")
         
 
 def intro_half_verse(beats_to_sec):
     for i in range(8):
-
-        t1 = time()
-        control_module.action().play_action("HH-Kick")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 ) 
-
-        t1 = time()    
-        control_module.action().play_action("HH")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 ) 
-
-        t1 = time()
-        control_module.action().play_action("HH-Snare")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 ) 
-
-        t1 = time()
-        control_module.action().play_action("HH")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 ) 
+        play_timed_motion(beats_to_sec, "HH-Kick")
+        play_timed_motion(beats_to_sec, "HH")
+        play_timed_motion(beats_to_sec, "HH-Snare")
+        play_timed_motion(beats_to_sec, "HH")
 
 
 def verse(beats_to_sec):
     for i in range(16):
-        t1 = time()
-        control_module.action().play_action("HH-Kick")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 )   
+        play_timed_motion(beats_to_sec, "HH-Kick")
+        play_timed_motion(beats_to_sec, "HH")
+        play_timed_motion(beats_to_sec, "HH-Snare")
+        play_timed_motion(beats_to_sec, "HH") 
 
-        t1 = time()
-        control_module.action().play_action("HH")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 )   
+#=======================================================
+# CANTONESE SONG
+#=====================================================
 
-        t1 = time()
-        control_module.action().play_action("HH-Snare")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 )   
+def canton_song():
+    bpm = 70
+    beats_to_sec = 60./bpm
+    sleep(0.3) #THIS SLEEP IS IMPORTANT FOR OP-3 AND POLARIS TO PLAY IN SYNC!!! PREV VALUE WAS 0.2
+    
+    print("INTROOOOOOOOOOOOOOOOOOO")
+    canton_verse(beats_to_sec/2)
 
-        t1 = time()
-        control_module.action().play_action("HH")
-        while(time() - t1 < beats_to_sec):
-            sleep(0.0001)
-        print("***********************time passed since start  ", time() - t1 )   
+    print("FFFFFFFFIRST VERSEEEEEEEEEEE")
+    canton_verse(beats_to_sec/2)
+    
+    print("BRIDGEEEE!")
+    bridge(beats_to_sec/2, False)
+    
+    print("CHOOOOOORUS")
+    chorus_canton(beats_to_sec/2)
+
+    print("POST CHORUS")
+    post_chorus(beats_to_sec/2)
+
+    print("SEEEECOND VERSEEEEEEEEEEE")
+    canton_verse(beats_to_sec/2)
+
+    print("SEEEECOND BRIDGEEEE")
+    bridge(beats_to_sec/2, False)
+
+    print("SECOND CHOOOOOORUS")
+    chorus_canton(beats_to_sec/2)
+
+    # print("POST CHOOOOOORUS")
+    # post_chorus(beats_to_sec/2)
+
+    print("THIRD   CHOOOOOORUS")
+    chorus_canton(beats_to_sec/2)
+
+    print("FINISHED")
+    control_module.action().play_action("Crash") 
+    exit()
+
+
+#===== helper methods  
+
+
+def chorus_canton(beats_to_sec):
+    for i in range(0,2):
+        for j in range(0, 8):
+            if j == 7:
+                play_timed_motion(beats_to_sec, "HH-Kick")
+                play_timed_motion(beats_to_sec, "HH")
+                play_timed_motion(beats_to_sec, "HH-Snare")
+                play_timed_motion(beats_to_sec, "Crash-Kick")
+            else:
+                play_timed_motion(beats_to_sec, "HH-Kick")
+                play_timed_motion(beats_to_sec, "HH")
+                play_timed_motion(beats_to_sec, "HH-Snare")
+                if j == 2 or j == 6:
+                    play_timed_motion(beats_to_sec, "HH-Kick")
+                else: 
+                    play_timed_motion(beats_to_sec, "HH")
+        print("Finished one line")
+
+
+def canton_verse(beats_to_sec):
+    for i in range(0,2):
+        for j in range(0, 8):
+            if j == 7:
+                play_timed_motion(beats_to_sec, "HH-Kick")
+                play_timed_motion(beats_to_sec, "HH")
+                play_timed_motion(beats_to_sec, "HH-Snare")
+                play_timed_motion(beats_to_sec, "HH-Snare")
+            else:
+                play_timed_motion(beats_to_sec, "HH-Kick")
+                play_timed_motion(beats_to_sec, "HH")
+                play_timed_motion(beats_to_sec, "HH-Snare")
+                if j == 2 or j == 6:
+                    play_timed_motion(beats_to_sec, "HH-Kick")
+                else: 
+                    play_timed_motion(beats_to_sec, "HH")
+        print("Finished one line")
+
+
+#before the chorus
+def bridge(beats_to_sec, after_chorus):
+    for i in range(0,8):
+        if i == 7:
+            if after_chorus and i is 0: #going from chorus to bridge the shifft from crash to ridfe is very violent, this prevents it
+                play_timed_motion(beats_to_sec, "HH-Kick")
+            else:
+                play_timed_motion(beats_to_sec, "Ride-Kick")
+            play_timed_motion(beats_to_sec, "Ride")
+            play_timed_motion(beats_to_sec, "Snare-Ride")
+            play_timed_motion(beats_to_sec, "Snare-Ride")
+        else:
+            play_timed_motion(beats_to_sec, "Ride-Kick")
+            play_timed_motion(beats_to_sec, "Ride")
+            play_timed_motion(beats_to_sec, "Snare-Ride")
+            if i == 2 or i == 6:
+                play_timed_motion(beats_to_sec, "Ride-Kick")
+            else: 
+                play_timed_motion(beats_to_sec, "Ride")
+
+#before the chorus
+def post_chorus(beats_to_sec):
+    for i in range(0,6):
+        if i == 7:
+            if i is 0: #going from chorus to bridge the shifft from crash to ridfe is very violent, this prevents it
+                play_timed_motion(beats_to_sec, "HH-Kick")
+            else:
+                play_timed_motion(beats_to_sec, "Ride-Kick")
+            play_timed_motion(beats_to_sec, "Ride")
+            play_timed_motion(beats_to_sec, "Snare-Ride")
+            play_timed_motion(beats_to_sec, "Snare-Ride")
+        else:
+            play_timed_motion(beats_to_sec, "Ride-Kick")
+            play_timed_motion(beats_to_sec, "Ride")
+            play_timed_motion(beats_to_sec, "Snare-Ride")
+            if i == 2 or i == 6:
+                play_timed_motion(beats_to_sec, "Ride-Kick")
+            else: 
+                play_timed_motion(beats_to_sec, "Ride")
+
+
+
+
+#call this function instead of the sleep between the intro and the first verse in the cantonese song!
+def non_sleep_cantonese(beats_to_sec):
+    play_timed_motion(beats_to_sec, "HH-Kick")
+    play_timed_motion(beats_to_sec, "HH")
+    play_timed_motion(beats_to_sec, "HH-Snare")
+    play_timed_motion(beats_to_sec, "HH")
+
+
+#==================================
+# CANTONESE SONG END
+#==========================================
+
+def play_timed_motion(beats_to_sec, motion):
+    t1 = time()
+    control_module.action().play_action(motion)
+    while(time() - t1 < beats_to_sec):
+        sleep(0.0001)
+    print("******time passed since start  ", time() - t1 )
+
 
 
 def test_time():
@@ -198,9 +298,9 @@ def calibrate_drums():
     raw_input("******************Press ENTER to begin\n")
 
     calibrate_motion('HH-Kick', sleep_time, caliration_iterations)
+    calibrate_motion('Crash-Kick', sleep_time, caliration_iterations)
     calibrate_motion('HH-Snare', sleep_time, caliration_iterations)
     calibrate_motion('Snare-Ride', sleep_time, caliration_iterations)
-
 
     print("******************Press enter to FINISH calibration")
     print("******************Enter 'r' to REPEAT calibration\n")
@@ -224,10 +324,34 @@ def calibrate_motion(motion, sleep_time, calibration_iterations):
 
 
 ##entry place for adult size
-def play_drums():
+def play_drums(song, udp):
     global control_module
-    server('192.168.31.4')
-    knocking_on() #play the song
+
+    if udp == "1":
+        raw_input("PRESS ENTER TO WAIT FOR MESSAGE FROM OP-3")
+        print("WAITING FOR MESAGE") #wait for message from op-3
+        server('192.168.31.11')
+    elif udp == "0":
+        if song == "0":
+            raw_input("PRESS ENTER TO START KNOCKING ON HEAVENS DOOR SONG (NO MSG OP3)")
+        else:
+            raw_input("PRESS ENTER TO START CANTONESE SONG (NO MSG OP3)")
+        
+        #count before starting the song
+        for i in range(0,4):
+            control_module.action().play_action("HH")
+            sleep(0.3)
+
+
+
+    t1 = time()
+    if song == "0":
+        knocking_on(t1) # 1 means play knocking on hevavens door
+    elif song == "1":
+        canton_song()
+    else:
+        print("Song is not defined!")
+        exit()
 
 
 
@@ -242,9 +366,6 @@ if __name__ == '__main__':
 
     robot_size = rospy.get_param('iros2019_node/size')
 
-
-    # set_variables() # Important !
-
     # Wait for other nodes to launch
     wait_for_node('/op3_manager')
     # wait_for_node('/vision_node')
@@ -256,16 +377,19 @@ if __name__ == '__main__':
     # Initialize OP3 ROS generic subscriber
     button_sub = rospy.Subscriber('/robotis/open_cr/button', String, button_callack)
 
-    # red_sub = rospy.Subscriber('/vision_node/keys', PositionArea,
-    #                            lambda msg: line.update(msg.x, msg.y, msg.position, msg.angle, msg.area))
 
     # Initializing modules
     control_module = ControlModule(event, robot_size)
 
     # Enabling walking module
     sleep(10)
+
+    inv_kin = InverseKinematics()
+
+    
     if robot_size == 'adult':
         drum_calibration = rospy.get_param('iros2019_node/drum_calibration') #check if we are gonna do sound and position check before running the program
+        udp = rospy.get_param('iros2019_node/udp')
         if drum_calibration == "1":
             print("Drum calibration enabled")
             calibrate_drums()
@@ -275,8 +399,14 @@ if __name__ == '__main__':
         mode_change = True
         control_module.action().play_action("drums_ready")
         sleep(1)
-        control_module.head().move_head(pan_position=0, tilt_position=-1.0)
-        raw_input('Press Enter to START SONG')
+
+        joints = inv_kin.joint_positions
+        for jo in joints:
+            joints[jo] = math.degrees(joints[jo])
+            print(jo, joints[jo])
+
+        
+
     elif robot_size == 'kid':
         calibrate_robot_pos(control_module)
 
@@ -294,7 +424,8 @@ if __name__ == '__main__':
                 rospy.loginfo('Starting iros event.')
 
                 if robot_size == 'adult':
-                    play_drums()
+                    song = rospy.get_param('iros2019_node/song')
+                    play_drums(song, udp)
                 elif robot_size == 'kid':
                     play_keys(mode_change, control_module, rate)
 

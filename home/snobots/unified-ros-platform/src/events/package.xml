@@ -38,5 +38,6 @@
 
   <build_depend>message_generation</build_depend>
   <exec_depend>message_runtime</exec_depend>
+  <exec_depend>ros_madplay_player</exec_depend>
 
 </package>

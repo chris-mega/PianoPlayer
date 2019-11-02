@@ -133,11 +133,17 @@ def calibrate_robot_pos(control=None):
 
     if song == 'billie':
         control_module.action().play_action("key_ready")
-        raw_input('Tab Enter to calibrate')
-        control_module.action().play_action("Do right")
-        raw_input('Tab Enter to ready')
+        sleep(1)
+        skip = raw_input('Press Enter to wave (s for skip)')
+        if skip != 's':
+            control_module.action().play_action("op3_wave")
         control_module.action().play_action("key_ready")
-        rospy.loginfo('Press start button to begin.')
+        skip = raw_input('Tab Enter to calibrate (s for skip)')
+        if skip != 's':
+            play_sound('{}/op3_no.mp3'.format(music_path))
+            control_module.action().play_action("op3_no")
+            control_module.action().play_action("Do right")
+            control_module.action().play_action("key_ready")
     elif song == 'knocking' or song == 'beyond':
         control_module.action().play_action("C ready")
         raw_input('Tab Enter to calibrate')
@@ -148,7 +154,7 @@ def calibrate_robot_pos(control=None):
 
 
 def play_keys(mode=None, control=None, ratep=None):
-    global mode_change, control_module, rate, udp, ik_config, with_ik
+    global mode_change, control_module, rate, udp, ik_config, with_ik, music_path
 
     if mode is not None and control is not None and ratep is not None:
         mode_change = mode
@@ -200,7 +206,7 @@ def play_keys(mode=None, control=None, ratep=None):
                 measure_key('Em billie', 1.*t2)
                 sleep(1.5*t2- 0.219)
                 control_module.action().play_action("key_ready")
-                
+                sleep(1) 
                 raw_input('Tab Enter to repeat')
                 
                 
@@ -208,6 +214,10 @@ def play_keys(mode=None, control=None, ratep=None):
             for i in range(18):
                 knokin_on(beat_to_sec, repeat)
                 repeat = not(repeat)
+            
+            sleep(5)
+            play_sound('{}/thankyou.mp3'.format(music_path))
+            sleep(4)
             exit()
         elif song == 'beyond':
             for i in range(6):
@@ -394,7 +404,13 @@ def calculate_ik_values():
     sleep(1)
     inv_kin.move_arm('r', original_right)
     sleep(1)
-    
+
+
+def play_sound(path):
+    msg = String()
+    msg.data = path
+    play_sound_pub.publish(msg)
+    print('playing!')
 
 
 # MAIN -------------------------------------------------------------
@@ -432,6 +448,10 @@ if __name__ == '__main__':
     hand_sub = rospy.Subscriber('/iros_vision_node/hand', ObjectCoords,
                                lambda msg: keys.hand.update(msg.x, msg.y, msg.width, msg.height, msg.area, msg.angle))
 
+    play_sound_pub = rospy.Publisher('/play_sound_file', String, queue_size=1)
+
+    music_path = os.path.join(rospkg.get_pkg_dir('events'), 'static')
+
     # Initializing modules
     control_module = ControlModule('iros2019', robot_size)
 
@@ -455,6 +475,17 @@ if __name__ == '__main__':
             sleep(1)
             cal = raw_input('Calibrate again? (y/n)')
         
+        rospy.loginfo('Press start button to begin.')
+
+    if song == 'billie':
+        skip = raw_input('Press enter for Michael (s for skip)')
+        if skip != 's':
+            play_sound('{}/op3_michael.mp3'.format(music_path))
+            control_module.action().play_action("op3_yes")
+        skip = raw_input('Press enter for \'I think I can\' (s for skip)')
+        if skip != 's':
+            play_sound('{}/op3_i_can.mp3'.format(music_path))
+            control_module.action().play_action("op3_yes")
         rospy.loginfo('Press start button to begin.')
 
     while not rospy.is_shutdown():        

@@ -1,20 +1,12 @@
+[MC] Intro the band member, DJ Chris, Oscar, Polaris. Oscar and Polaris should wave or play a key. 
+
 [MC] `Hello! Snobots-Band is ready to rock! Let's do sound check`
 
-[Polaris calibration]
-
-[MC] `Ok good, can you read music and play at the same time, Polaris?`
-
-[Polaris] `Of course`
-
-[MC] `lets see it!`
-
-[Polaris plays Rockband]
-
-[MC] `Good good, what about our keyboardist Chris?`
+[MC] `what about our keyboardist Chris?`
 
 [Chris] `Oscar is a little shy, hey, are you ready?`
 
-[OP3 "Oscar"] `No`
+[OP3 "Oscar"] `No`: Oscar shakes his head
 [play calibration]
 
 [Chris] `Ok what popular song do you know Oscar?`
@@ -27,9 +19,25 @@
 
 [Chris] `Oscar, do you think you could play billy jean?`
 
+[Oscar] `I think I can`
+
 [Oscar plays Billie Jean]
 
-[MC] `Sounds good. But can the robots play together?`
+[MC] `what about Polaris?`
+
+[Polaris calibration]
+
+[MC] `Ok good, can you read music and play at the same time, Polaris?`
+
+[Polaris] `Of course` : Polaris nods his head
+
+[MC] `lets do it!`
+
+[Polaris plays Rockband]
+
+[MC] `Sounds good. But can the we play together as a band?`
+
+[Polaris] `Yes`
 
 [MC] `Does anybody know Guns n Roses?`
 

@@ -2,17 +2,19 @@
     <arg name="event" default="iros2019"/>
     <arg name="size"/>
     <arg name="drum_calibration" default="0"/>
+    <arg name="song" default="0"/>  <!--  0 to play knocking on heavens door, 1 to play cantonese song -->
+    <arg name="udp" default="1"/> <!-- 1 to wait for udp message, 0 to not wait for udp message -->
 
     <!-- robotis op3 manager -->
     <include file="$(find op3_manager)/launch/op3_manager.launch">
         <arg name="size" value="$(arg size)"/>
     </include>
 
-    
-
     <node name="$(arg event)_node" pkg="events" type="$(arg event)_node.py" output="screen">
         <param name="event" type="str" value="$(arg event)" />
         <param name="size" type="string" value="$(arg size)" />
         <param name="drum_calibration" type="string" value="$(arg drum_calibration)"/>
+        <param name="song" type="string" value="$(arg song)"/>
+        <param name="udp" type="string" value="$(arg udp)"/>
     </node>
 </launch>

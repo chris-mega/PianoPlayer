@@ -186,5 +186,17 @@
     "F billie ready":{
         "index": 219,
         "play_count": 1
+    },
+    "op3_wave":{
+        "index": 180,
+        "play_count":1
+    },
+    "op3_yes":{
+        "index": 182,
+        "play_count":1
+    },
+    "op3_no":{
+        "index": 181,
+        "play_count":1
     }
 }
