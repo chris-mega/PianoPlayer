@@ -76,6 +76,9 @@ def knocking_on(time_pased):
     
     print("VEEEEEEEEEEEEEEEEEEEEEEEEEERSE")
     verse(beats_to_sec/2)
+
+    print("WAITING FOR MESAGE") #wait for message from op-3
+    server('192.168.31.9')
     
     print("CHOOOOOOOOOOOOOOOOOOOOOOOOOORUS")
     chorus(beats_to_sec/2)
@@ -326,16 +329,21 @@ def calibrate_motion(motion, sleep_time, calibration_iterations):
 ##entry place for adult size
 def play_drums(song, udp):
     global control_module
+    skip = raw_input('Press Enter to Yes (s for skip')
+    if skip != 's':
+        control_module.action().play_action('polaris_yes')
 
     if udp == "1":
-        raw_input("PRESS ENTER TO WAIT FOR MESSAGE FROM OP-3")
         print("WAITING FOR MESAGE") #wait for message from op-3
         server('192.168.31.11')
     elif udp == "0":
         if song == "0":
-            raw_input("PRESS ENTER TO START KNOCKING ON HEAVENS DOOR SONG (NO MSG OP3)")
+            #raw_input("PRESS ENTER TO START KNOCKING ON HEAVENS DOOR SONG (NO MSG OP3)")
+            print("Playing knocking on heavens door")
         else:
-            raw_input("PRESS ENTER TO START CANTONESE SONG (NO MSG OP3)")
+            #raw_input("PRESS ENTER TO START CANTONESE SONG (NO MSG OP3)")
+            print("Playing cantonese song")
+
         
         #count before starting the song
         for i in range(0,4):

@@ -14,7 +14,7 @@
     </include>
 
     <!-- sound player -->
-    <node pkg="ros_madplay_player" type="ros_madplay_player" name="ros_madplay_player" output="screen"/>
+    
 
     <!-- vision -->
     <include file="$(find iros_vision)/launch/piano_detector.launch">

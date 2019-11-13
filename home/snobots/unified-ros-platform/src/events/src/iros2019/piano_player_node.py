@@ -22,7 +22,7 @@ import os
 import json
 import numpy as np
 import math
-from udp_connect import client
+from udp_connect import client, server
 
 # SETUP ----------------------------------------------
 
@@ -135,21 +135,32 @@ def calibrate_robot_pos(control=None):
         control_module.action().play_action("key_ready")
         sleep(1)
         skip = raw_input('Press Enter to wave (s for skip)')
+        play_sound('Oscar_Intro1.mp3')
+        
         if skip != 's':
             control_module.action().play_action("op3_wave")
+
         control_module.action().play_action("key_ready")
-        skip = raw_input('Tab Enter to calibrate (s for skip)')
+        play_sound('Oscar_Intro2.mp3')
+    
         if skip != 's':
-            play_sound('{}/op3_no.mp3'.format(music_path))
-            control_module.action().play_action("op3_no")
             control_module.action().play_action("Do right")
             control_module.action().play_action("key_ready")
     elif song == 'knocking' or song == 'beyond':
         control_module.action().play_action("C ready")
+        if song == 'knocking':
+            raw_input('Press enter')
+            play_sound('Oscar_IntroPolaris3.mp3')
+            sleep(1)
+            play_sound('Oscar_StartSong.mp3')
+
         raw_input('Tab Enter to calibrate')
         control_module.action().play_action("C")
         raw_input('Tab Enter to ready')
         control_module.action().play_action("C ready")
+
+        
+
         rospy.loginfo('Press start button to begin.')
 
 
@@ -175,7 +186,7 @@ def play_keys(mode=None, control=None, ratep=None):
             vars = json.load(fp)
 
     if udp == '1':
-        client('192.168.31.11', 'ready')
+        client('192.168.31.9', 'ready')
 
     beat_to_sec = 60./bpm
 
@@ -208,16 +219,21 @@ def play_keys(mode=None, control=None, ratep=None):
                 control_module.action().play_action("key_ready")
                 sleep(1) 
                 raw_input('Tab Enter to repeat')
+                play_sound('Oscar_IntroPolaris.mp3')
+                sleep(1)
+                play_sound('Oscar_IntroPolaris2.mp3')
+                exit()
                 
                 
         elif song == 'knocking':
-            for i in range(18):
+            for i in range(22): # 18, 22
+                if i == 18 and udp == '1':
+                    client('192.168.31.9', 'continue')
+                # if i == 14 and udp == '1':
+                #     server('192.168.31.8')
                 knokin_on(beat_to_sec, repeat)
                 repeat = not(repeat)
             
-            sleep(5)
-            play_sound('{}/thankyou.mp3'.format(music_path))
-            sleep(4)
             exit()
         elif song == 'beyond':
             for i in range(6):
@@ -230,6 +246,9 @@ def play_keys(mode=None, control=None, ratep=None):
                     cantonese_song(beat_to_sec, 1)
                 elif i == 2:
                     cantonese_song(beat_to_sec, 2)
+
+            raw_input('Press enter to finish')
+            play_sound('Oscar_FinalThanks.mp3')
             exit()
 
 
@@ -250,11 +269,11 @@ def billie_jean_ik(config, beat_to_sec):
 def measure_ik(arm, key, expected):
     t1 = time()
     inv_kin.move_arm(arm, key['ready'])
-    sleep(0.15)
+    sleep(0.1)
     inv_kin.move_arm(arm, key['play'])
-    sleep(0.15)
+    sleep(0.1)
     inv_kin.move_arm(arm, key['ready'])
-    sleep(0.15)
+    sleep(0.1)
     
     return time() - t1
 
@@ -407,10 +426,17 @@ def calculate_ik_values():
 
 
 def play_sound(path):
-    msg = String()
-    msg.data = path
-    play_sound_pub.publish(msg)
-    print('playing!')
+    # msg = String()
+    # msg.data = path
+    # play_sound_pub.publish(msg)
+    # print('playing!')
+    # s = 'mpg123 Desktop/{}'.format(path)
+    s = 'mpg123 ../Desktop/{}'.format(path)
+    print(s)
+    os.system(s)
+
+
+
 
 
 # MAIN -------------------------------------------------------------
@@ -478,14 +504,24 @@ if __name__ == '__main__':
         rospy.loginfo('Press start button to begin.')
 
     if song == 'billie':
-        skip = raw_input('Press enter for Michael (s for skip)')
-        if skip != 's':
-            play_sound('{}/op3_michael.mp3'.format(music_path))
-            control_module.action().play_action("op3_yes")
-        skip = raw_input('Press enter for \'I think I can\' (s for skip)')
-        if skip != 's':
-            play_sound('{}/op3_i_can.mp3'.format(music_path))
-            control_module.action().play_action("op3_yes")
+        skip = raw_input('Press enter for what do you want (s for skip)')
+        play_sound('Oscar_Intro3.mp3')
+        sleep(3)
+        play_sound('Oscar_soundcheck1.mp3')
+        control_module.action().play_action("op3_no")
+        option = raw_input('Press 0 for no, 1 for yes')
+        if option == '0':
+            play_sound('Oscar_soundcheck2.mp3')
+        else:
+            play_sound('Oscar_soundcheck2_1.mp3')
+
+
+            # control_module.action().play_action("op3_yes")
+        # skip = raw_input('Press enter for \'I think I can\' (s for skip)')
+        # if skip != 's':
+        #     # play_sound('{}/op3_i_can.mp3'.format(music_path))
+        #     os.system('espeak \"I think I can play it\" -v en-us')
+        #     control_module.action().play_action("op3_yes")
         rospy.loginfo('Press start button to begin.')
 
     while not rospy.is_shutdown():        
