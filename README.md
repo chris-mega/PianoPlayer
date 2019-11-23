@@ -16,6 +16,7 @@ Your system must contain the following programs/libraries installed
 - [Python 2.7](https://www.python.org/downloads/)
 - [numpy](https://www.scipy.org/install.html)
 - [pyyaml](https://pypi.org/project/PyYAML/)
+- Unified-ROS-Platform, a framework adapted from OP3 Framework by the [Autonomous Agents Lab](http://aalab.cs.umanitoba.ca/) at University of Manitoba (not public, but some workarounds can be made for the missing files in this repository)
 
 ## Build
 Copy the packages inside `src` into your workspace and type `catkin_make`
